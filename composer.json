@@ -1,5 +1,5 @@
 {
-  "name": "leeberonio/betterlog",
+  "name": "lvberonio/betterlog",
   "description": "Laravel logging package with handling exception to Sentry",
   "keywords": [
     "laravel",
