@@ -1,0 +1,28 @@
+{
+  "name": "leeberonio/betterlog",
+  "description": "Laravel logging package with handling exception to Sentry",
+  "keywords": [
+    "laravel",
+    "sentry",
+    "monolog",
+    "log",
+    "exception"
+  ],
+  "license": "Copyright (c) 2019 Incube8.sg",
+  "authors": [
+    {
+      "name": "Lee Beronio",
+      "email": "lee@incube8.sg"
+    }
+  ],
+  "require": {
+    "php": "5.5.*",
+    "sentry/sentry-laravel": "^0.11.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "lvberonio\\betterlog\\": "1.1"
+    }
+  },
+  "minimum-stability": "stable"
+}
