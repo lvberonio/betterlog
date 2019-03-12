@@ -16,7 +16,8 @@
     }
   ],
   "require": {
-    "php": "5.5.*",
+    "php": ">=7.1",
+    "laravel/framework": "5.5.*",
     "sentry/sentry-laravel": "^0.11.0"
   },
   "autoload": {
