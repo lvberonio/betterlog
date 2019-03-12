@@ -21,7 +21,7 @@
   },
   "autoload": {
     "psr-4": {
-      "lvberonio\\betterlog\\": "1.1"
+      "lvberonio\\betterlog\\": "1.0.0"
     }
   },
   "minimum-stability": "stable"
