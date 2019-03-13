@@ -22,7 +22,7 @@
   },
   "autoload": {
     "psr-4": {
-      "lvberonio\\betterlog\\": "src/"
+      "Lvberonio\\Betterlog\\": "src/"
     }
   },
   "minimum-stability": "stable"
