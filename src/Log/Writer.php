@@ -6,7 +6,7 @@
  * @copyright  2019 incube8.sg
  */
 
-namespace App\Services\Betterlog\Log;
+namespace Lvberonio\Betterlog\Log;
 
 use Illuminate\Log\Writer as BaseWriter;
 

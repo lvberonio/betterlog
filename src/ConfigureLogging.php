@@ -6,9 +6,9 @@
  * @copyright 2019 incube8.sg
  */
 
-namespace App\Services\Betterlog;
+namespace Lvberonio\Betterlog;
 
-use App\Services\Betterlog\Log\Writer;
+use Lvberonio\Betterlog\Log\Writer;
 use Illuminate\Log\LogServiceProvider as BaseConfigureLogging;
 use Monolog\Logger as Monolog;
 
