@@ -7,7 +7,7 @@
  * @copyright Copyright (c) Incube8.sg
  */
 
-namespace Incube8\Betterlog;
+namespace Lvberonio\Betterlog;
 
 use Illuminate\Support\ServiceProvider;
 
