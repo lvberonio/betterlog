@@ -1,6 +1,6 @@
 ## Betterlog
 
-The betterlog service provider extends the existing Laravel 5.5 monolog writer with the following features:
+The Betterlog service provider extends the existing Laravel 5.5 monolog writer with the following features:
 
 * Catch Laravel exceptions and ignore the exception to prevent it from breaking the application
 * Send to Sentry.io for better error reporting and monitoring
@@ -31,7 +31,7 @@ composer update
 
 #### Register Service Provider
 
-After composer update is complete, add these lines to app/Providers/AppServiceProvider.php in the register() function:
+After composer update is complete, add these lines to `app/Providers/AppServiceProvider.php` in the register() function:
 
 ```
 // Overrides monolog logging
@@ -64,15 +64,26 @@ No matter which option or method is implemented, Betterlog will continue to work
 
 #### Option 1 - Direct to Sentry
 
-Useful for new app/website/refactoring
+Betterlog sends out data to sentry by providing Exception or if context contains "exception".
 
 ```
-TODO
+try {
+    // do something
+} catch (\Exception $e) {
+    \Log::error(__CLASS__ . ':' . __TRAIT__ . ':' . __FILE__ . ':' . __LINE__ . ':' . __FUNCTION__ . ':' .
+        'Exception thrown on getting user profile view data for a member', [
+        'exception_type' => get_class($e),
+        'message'        => $e->getMessage(),
+        'code'           => $e->getCode(),
+        'line_number'    => $e->getLine(),
+        'exception'      => $e,
+    ]);
+}    
 ```
 
 #### Option 2 - Using existing Log facade
 
-Useful for existing app/website that already uses the Log facade
+Useful for existing applications that already use the Log facade.
 
 ```
 // Typical logging, nothing additional to add
@@ -81,53 +92,40 @@ try {
 } catch (\Exception $e) {
     Log::error(__CLASS__ . ':' . __TRAIT__ . ':' . __FILE__ . ':' . __LINE__ . ':' . __FUNCTION__ . ':' .
         'Exception thrown on getting user profile view data for a member', [
-        'exception_type' => get_class($e),
-        'message'        => $e->getMessage(),
-        'code'           => $e->getCode(),
-        'line_number'    => $e->getLine(),
-        'profile'        => !empty($profile) ? $profile->id : ''
-    ]);
-    throw new ProfileViewException('Exception thrown on getting user profile view data for a member', 40114014);
-}
-
-// Enchanced typical logging, with additional argument `exception`
-try {
-    // do something
-} catch (\Exception $e) {
-    Log::error(__CLASS__ . ':' . __TRAIT__ . ':' . __FILE__ . ':' . __LINE__ . ':' . __FUNCTION__ . ':' .
-        'Exception thrown on getting user profile view data for a member', [
-        'exception_type' => get_class($e),
-        'message'        => $e->getMessage(),
-        'code'           => $e->getCode(),
-        'line_number'    => $e->getLine(),
-        'profile'        => !empty($profile) ? $profile->id : '',
-        'exception'      => $e
-    ]);
+            'exception_type' => get_class($e),
+            'message'        => $e->getMessage(),
+            'code'           => $e->getCode(),
+            'line_number'    => $e->getLine(),
+            'profile'        => !empty($profile) ? $profile->id : '',
+        ]
+    );
+    
     throw new ProfileViewException('Exception thrown on getting user profile view data for a member', 40114014);
 }
 
 // Extended info logging
-Log::error(__CLASS__ . ':' . __TRAIT__ . ':' . __FILE__ . ':' . __LINE__ . ':' . __FUNCTION__ . ':' .
-    'Logging informational logs', [
-        'arg1' => 'value',
-        'arg2' => 'value'
-    ]);
+    Log::error(__CLASS__ . ':' . __TRAIT__ . ':' . __FILE__ . ':' . __LINE__ . ':' . __FUNCTION__ . ':' .
+        'Logging informational logs', [
+            'arg1' => 'value',
+            'arg2' => 'value',
+        ]
+    );
     
 // Normal info logging
 Log::info('Some information here');
 ```
 
-##### Attaching User Data
+##### Attaching User Data to Sentry
 
 As this package is already integrated with Laravel, attaching user information is quick and easy.
 
-### Update the Middleware
+#### Update the Middleware
 
-Simply update `app/Http/Middleware/AddUserToSentry` to provide Sentry with User information via its callback function.
+Simply update the middleware `app/Http/Middleware/SentryContext` to provide user data to Sentry via its callback function.
 
-### Attaching the Middleware
+##### Attaching the Middleware
 
-To activate this middleware, add the middleware class to the `$middleware` in `app/Http/Kernel.php`
+Add this middleware class to the `$middleware` in `app/Http/Kernel.php`.
 
 ```
 protected $middleware = [
@@ -135,4 +133,18 @@ protected $middleware = [
 ];
 ```
 
-You will notice User information is now being sent to Sentry.
+When exception is thrown, Betterlog provides user data to Sentry for further information.
+
+### Testing
+
+For testing purposes that exception is thrown to Sentry, add the following code to your command or job:
+```
+if (config('sentry.enabled_test_exception')) {
+    throw new \Exception('Unhandled exception is thrown to test sentry logging');
+}
+```
+
+Then add this to `.env` file:
+```
+SENTRY_ENABLED_TEST_EXCEPTION=false
+```
