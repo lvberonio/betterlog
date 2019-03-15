@@ -13,12 +13,12 @@ Add these lines to your composer.json file:
 
 ```
 "require": {
-    "lvberonio/betterlog": "1.2.5"
+    "lvberonio/betterlog": "1.2.6"
 },
 "repositories": [
     {
-        "type": "vcs",
-        "url": "https://github.com/lvberonio/Betterlog.git"
+      "type": "git",
+      "url": "https://github.com/lvberonio/Betterlog.git"
     }
 ],
 ```
@@ -35,7 +35,7 @@ After composer update is complete, add these lines to `app/Providers/AppServiceP
 
 ```
 // Overrides monolog logging
-$this->app->register(\App\Services\Betterlog\ConfigureLogging::class);
+$this->app->register(\Lvberonio\Betterlog\ConfigureLogging::class);
 ```
 
 #### Include Betterlog Required Files
