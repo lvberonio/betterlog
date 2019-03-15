@@ -33,13 +33,4 @@ class BetterlogServiceProvider extends ServiceProvider
             __DIR__ . '/Http/Middleware/SentryContext.php' => app_path('Http/Middleware/AddUserToSentry.php')
         ], 'sentry_config');
     }
-
-    /**
-     * Register the service provider.
-     *
-     * @return void
-     */
-    public function register()
-    {
-    }
 }
