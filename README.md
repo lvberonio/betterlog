@@ -18,7 +18,7 @@ Add these lines to your composer.json file:
 "repositories": [
     {
         "type": "vcs",
-        "url": "ssh://git@stash.infostreamgroup.com:7999/ls/betterlog.git"
+        "url": "https://github.com/lvberonio/Betterlog.git"
     }
 ],
 ```
