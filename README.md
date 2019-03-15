@@ -13,7 +13,7 @@ Add these lines to your composer.json file:
 
 ```
 "require": {
-    "leeberonio/betterlog": "1.1"
+    "leeberonio/betterlog": "1.2.1
 },
 "repositories": [
     {

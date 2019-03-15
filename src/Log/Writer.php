@@ -8,20 +8,20 @@
 
 namespace Lvberonio\Betterlog\Log;
 
-use Illuminate\Log\Writer as BaseWriter;
+use Illuminate\Log\Logger;
 
 /**
  * Custom Log Writer
  *
  * Provides some alternatives to the standard laravel log writer.
  */
-class Writer extends BaseWriter
+class Writer extends Logger
 {
     /**
      * Ignore debug logs from writing if app_debug is turned off
      *
      * @param  string $message
-     * @param  array  $context
+     * @param  array $context
      * @return void
      */
     public function debug($message, array $context = array())
@@ -35,12 +35,10 @@ class Writer extends BaseWriter
     }
 
     /**
-     * Write a message to Monolog.
+     * Write a message to the log.
      *
-     * Catch and ignore exception if it occurs.
-     *
-     * @param  string $level
-     * @param  string $message
+     * @param  string  $level
+     * @param  string  $message
      * @param  array  $context
      * @return void
      */
@@ -55,12 +53,12 @@ class Writer extends BaseWriter
                 ) {
                     if (is_object($message)) {
                         // exception attributes
-                        $className    = get_class($message);
-                        $fileName     = $message->getFile();
-                        $lineNumber   = $message->getLine();
-                        $errorMessage = $message->getMessage();
-                        $functionName = null;
-                        $traitName    = null;
+                        $className     = get_class($message);
+                        $fileName      = $message->getFile();
+                        $lineNumber    = $message->getLine();
+                        $errorMessage  = $message->getMessage();
+                        $functionName  = null;
+                        $traitName     = null;
                         $exceptionCode = $message->getCode();
                         $exceptionType = null;
                     } else {
@@ -68,7 +66,8 @@ class Writer extends BaseWriter
                         $logData = explode(':', $message, 6);
 
                         if (count($logData) === 6) {
-                            list($className, $traitName, $fileName, $lineNumber, $functionName, $errorMessage) = $logData;
+                            list($className, $traitName, $fileName, $lineNumber, $functionName, $errorMessage) =
+                                $logData;
                         } elseif (count($logData) === 5) {
                             list($className, $traitName, $fileName, $lineNumber, $functionName) = $logData;
                         } else {
@@ -141,7 +140,7 @@ class Writer extends BaseWriter
         try {
             $this->fireLogEvent($level, $message = $this->formatMessage($message), $context);
 
-            $this->monolog->{$level}($message, $context);
+            $this->logger->{$level}($message, $context);
         } catch (\Exception $e) {
             // ignore monolog exception
         }
