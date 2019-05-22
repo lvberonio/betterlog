@@ -1,6 +1,6 @@
 ## Betterlog
 
-The Betterlog service provider extends the existing Laravel 5.5 monolog writer with the following features:
+The Betterlog service provider extends the existing Laravel 5.8.* monolog writer with the following features:
 
 * Catch Laravel exceptions and ignore the exception to prevent it from breaking the application
 * Send to Sentry.io for better error reporting and monitoring
