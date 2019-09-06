@@ -7,7 +7,7 @@ return [
     | Enable Sentry
     |--------------------------------------------------------------------------
     |
-    | Set to true to log all logs to sentry.
+    | Set to true to enable Sentry.
     |
     */
 
@@ -15,7 +15,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Enable Test Exception to Log in Sentry
+    | Enable log to Sentry
+    |--------------------------------------------------------------------------
+    |
+    | Set to true to send logs to sentry.
+    |
+    */
+
+    'enabled_log' => env('SENTRY_ENABLED_LOG', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Enable test exception to log in Sentry
     |--------------------------------------------------------------------------
     |
     | Set to true to log all logs to sentry.
@@ -30,7 +41,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | Set to true to log ONLY for unhandled exceptions to sentry.
-    | Requires sentry.enabled = true
+    | Requires sentry.enabled_log = true
     |
     */
 
@@ -43,7 +54,7 @@ return [
     |
     | Set to true to optionally allow logging to Sentry when sentry_alert = true
     | parameter exists in the Log facade.
-    | Requires sentry.enabled = true
+    | Requires sentry.enabled_log = true
     |
     */
 
@@ -72,5 +83,4 @@ return [
     */
 
     'breadcrumbs.sql_bindings' => env('SENTRY_SQL_BINDINGS', true),
-
 ];
