@@ -1,6 +1,6 @@
 {
   "name": "lvberonio/betterlog",
-  "description": "Laravel logging package with handling exception to Sentry",
+  "description": "Laravel logger with exception handler to Sentry",
   "keywords": [
     "laravel",
     "sentry",
