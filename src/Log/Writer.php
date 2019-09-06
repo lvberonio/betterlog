@@ -45,7 +45,7 @@ class Writer extends Logger
     protected function writeLog($level, $message, $context)
     {
         try {
-            if (config('sentry.enabled')) {
+            if (config('sentry.enabled_log')) {
                 if (config('sentry.enabled_unhandled_exceptions_only') ||
                     (config('sentry.enabled_optional_logging') &&
                         isset($context['sentry_alert']) &&
