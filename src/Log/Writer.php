@@ -2,8 +2,9 @@
 /**
  * Custom Log Writer
  *
- * @author     Lee
- * @copyright  2019 incube8.sg
+ * @date      08/3/17
+ * @author    lvberonio
+ * @copyright 2019 Incube8.sg
  */
 
 namespace Lvberonio\Betterlog\Log;
@@ -20,13 +21,12 @@ class Writer extends Logger
     /**
      * Ignore debug logs from writing if app_debug is turned off
      *
-     * @param  string $message
-     * @param  array $context
+     * @param string $message
+     * @param array $context
      * @return void
      */
     public function debug($message, array $context = array())
     {
-        // return if not in debug mode
         if (!config('app.debug')) {
             return;
         }
@@ -37,41 +37,38 @@ class Writer extends Logger
     /**
      * Write a message to the log.
      *
-     * @param  string  $level
-     * @param  string  $message
-     * @param  array  $context
+     * @param string $level
+     * @param \Throwable|\Exception $exception
+     * @param array $context
      * @return void
      */
-    protected function writeLog($level, $message, $context)
+    protected function writeLog($level, $exception, $context)
     {
         try {
-            if (config('sentry.enabled_log')) {
-                if (config('sentry.enabled_unhandled_exceptions_only') ||
-                    (config('sentry.enabled_optional_logging') &&
-                        isset($context['sentry_alert']) &&
-                        $context['sentry_alert'] === true)
+            if (config('betterlog.enabled')) {
+                if (config('betterlog.unhandled_exceptions_only')
+                    || (config('betterlog.optional_logging') && isset($context['sentry_alert']))
                 ) {
-                    if (is_object($message)) {
-                        // exception attributes
-                        $className     = get_class($message);
-                        $fileName      = $message->getFile();
-                        $lineNumber    = $message->getLine();
-                        $errorMessage  = $message->getMessage();
-                        $functionName  = null;
-                        $traitName     = null;
-                        $exceptionCode = $message->getCode();
-                        $exceptionType = null;
+                    if (is_object($exception)) {
+                        // Set default
+                        $functionName = $traitName = null;
+
+                        // Get Exception attributes
+                        $className  = get_class($exception);
+                        $fileName   = $exception->getFile();
+                        $lineNumber = $exception->getLine();
+                        $errorMsg   = $exception->getMessage();
+                        $errorCode  = $exception->getCode();
                     } else {
-                        // Split the log message to see how it is formatted.
-                        $logData = explode(':', $message, 6);
+                        // Split the log message based on formatting.
+                        $logData = explode(':', $exception, 6);
 
                         if (count($logData) === 6) {
-                            list($className, $traitName, $fileName, $lineNumber, $functionName, $errorMessage) =
-                                $logData;
+                            list($className, $traitName, $fileName, $lineNumber, $functionName, $errorMsg) = $logData;
                         } elseif (count($logData) === 5) {
                             list($className, $traitName, $fileName, $lineNumber, $functionName) = $logData;
                         } else {
-                            list($className, $traitName, $fileName, $lineNumber, $functionName, $errorMessage) = [
+                            list($className, $traitName, $fileName, $lineNumber, $functionName, $errorMsg) = [
                                 null,
                                 null,
                                 null,
@@ -81,32 +78,16 @@ class Writer extends Logger
                             ];
                         }
 
+                        // Contain Exception context object
                         if (!empty($context['exception'])) {
-                            // context contains the exception object
-                            $exceptionType = get_class($context['exception']);
-                            $exceptionCode = $context['exception']->getCode();
+                            $errorCode = $context['exception']->getCode();
                         } else {
-                            $exceptionType = !empty($context['exception_type'])
-                                ? $context['exception_type']
-                                : (!empty($errorMessage)
-                                    ? $errorMessage
-                                    : (!empty($context['message'])
-                                        ? $context['message']
-                                        : $message
-                                    )
-                                );
-                            $exceptionCode = !empty($context['code'])
-                                ? $context['code']
-                                : null;
+                            $errorCode = $context['code'] ?? null;
                         }
                     }
 
-                    $errorMessage = !empty($errorMessage)
-                        ? $errorMessage
-                        : (!empty($context['message'])
-                            ? $context['message']
-                            : $message
-                        );
+                    // Override $errorMessage if empty
+                    $errorMsg = $errorMsg ?? ($context['message'] ?? $exception);
 
                     $metaData = [
                         'extra' => [
@@ -115,17 +96,17 @@ class Writer extends Logger
                             'functionName' => $functionName,
                             'fileName'     => $fileName,
                             'lineNumber'   => $lineNumber,
-                            'message'      => $errorMessage,
-                            'code'         => $exceptionCode,
+                            'message'      => $errorMsg,
+                            'code'         => $errorCode,
                             'details'      => json_encode($context)
                         ],
                         'level' => $level,
                     ];
 
-                    // Should only log to Sentry when it is exception
-                    if (is_object($message)) {
-                        // $message is an exception
-                        \Sentry\SentryLaravel\SentryFacade::captureException($message, $metaData);
+                    // Log to Sentry with Exception
+                    if (is_object($exception)) {
+                        // $message contains is Exception
+                        \Sentry\SentryLaravel\SentryFacade::captureException($exception, $metaData);
                     } elseif (!empty($context['exception'])) {
                         \Sentry\SentryLaravel\SentryFacade::captureException($context['exception'], $metaData);
 
@@ -134,15 +115,15 @@ class Writer extends Logger
                 }
             }
         } catch (\Exception $e) {
-            // do nothing, just continue logging
+            // Proceed with normal logging
         }
 
         try {
-            $this->fireLogEvent($level, $message = $this->formatMessage($message), $context);
+            $this->fireLogEvent($level, $message = $this->formatMessage($exception), $context);
 
             $this->logger->{$level}($message, $context);
         } catch (\Exception $e) {
-            // ignore monolog exception
+            // Ignore monolog Exception
         }
     }
 }
