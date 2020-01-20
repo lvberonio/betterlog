@@ -3,8 +3,8 @@
  * Class BetterlogServiceProvider
  *
  * @date      08/3/17
- * @author    leeberonio
- * @copyright Copyright (c) Incube8.sg
+ * @author    lvberonio
+ * @copyright 2019 Incube8.sg
  */
 
 namespace Lvberonio\Betterlog;
@@ -25,12 +25,12 @@ class BetterlogServiceProvider extends ServiceProvider
     {
         // Publish the config
         $this->publishes([
-            __DIR__ . '/config/sentry.php' => config_path('sentry.php')
-        ], 'sentry_config');
+            __DIR__ . '/config/betterlog.php' => config_path('betterlog.php')
+        ], 'betterlog_sentry_config');
 
         // Publish the middleware
         $this->publishes([
-            __DIR__ . '/Http/Middleware/SentryContext.php' => app_path('Http/Middleware/AddUserToSentry.php')
-        ], 'sentry_config');
+            __DIR__ . '/Http/Middleware/SentryContext.php' => app_path('Http/Middleware/SentryContext.php')
+        ], 'betterlog_sentry_config');
     }
 }

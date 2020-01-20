@@ -2,15 +2,14 @@
 /**
  * Configure Logging Class
  *
- * @author    Lee
- * @copyright 2019 incube8.sg
+ * @date      08/3/17
+ * @author    lvberonio
+ * @copyright 2019 Incube8.sg
  */
 
 namespace Lvberonio\Betterlog;
 
-use Illuminate\Log\LogManager;
 use Lvberonio\Betterlog\Log\BaseLogManager;
-use Lvberonio\Betterlog\Log\Writer;
 use Illuminate\Log\LogServiceProvider as BaseConfigureLogging;
 
 class ConfigureLogging extends BaseConfigureLogging
