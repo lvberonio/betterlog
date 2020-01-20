@@ -18,7 +18,7 @@
   "require": {
     "php": ">=7.1",
     "laravel/framework": "5.8.*",
-    "sentry/sentry-laravel": ">=0.8.0"
+    "sentry/sentry-laravel": ">=1.5.0"
   },
   "autoload": {
     "psr-4": {

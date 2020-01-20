@@ -7,13 +7,15 @@ The Betterlog service provider extends the existing Laravel 5.8.* monolog writer
 
 ### Installation
 
-***NOTE:*** *Before you begin, make sure to remove Incube8/Debug and/or Incube8/Nolog as this is meant as a replacement.*
+Pre-requisite:
+
+Before you begin, make sure to remove Incube8/Debug and/or Incube8/Nolog as this Betterlog works without these packages.
 
 Add these lines to your composer.json file:
 
 ```
 "require": {
-    "lvberonio/betterlog": "1.2.6"
+    "lvberonio/betterlog": "1.4.0"
 },
 "repositories": [
     {
@@ -43,12 +45,12 @@ $this->app->register(\Lvberonio\Betterlog\ConfigureLogging::class);
 Run this Artisan command to copy required files, namely `config/sentry.php` and `Http/Middleware/SentryContext.php`:
 
 ```
-php artisan vendor:publish --provider="Incube8\Betterlog\BetterlogServiceProvider" --force
+php artisan vendor:publish --provider="Lvberonio\Betterlog\BetterlogServiceProvider" --force
 ```
 
 ### Sentry Config
 
-Before using Sentry, make sure to provide config values to `config/sentry.php`
+Before using Sentry, make sure to provide config values to `config/betterlog.php`
 
 Add these lines into you .env file
 
@@ -59,8 +61,8 @@ SENTRY_DSN=<provided_dsn>
 
 ### Usage
 
-There are multiple ways to start Laravel logging.
-No matter which option or method is implemented, Betterlog will continue to work with Sentry.
+There are several ways to start Laravel logging.
+No matter which option is implemented, Betterlog continues to work with Sentry.
 
 #### Option 1 - Direct to Sentry
 
@@ -83,14 +85,14 @@ try {
 
 #### Option 2 - Using existing Log facade
 
-Useful for existing applications that already use the Log facade.
+This is useful for existing applications that have used the Log facade.
 
 ```
 // Typical logging, nothing additional to add
 try {
     // do something
 } catch (\Exception $e) {
-    Log::error(__CLASS__ . ':' . __TRAIT__ . ':' . __FILE__ . ':' . __LINE__ . ':' . __FUNCTION__ . ':' .
+    \Log::error(__CLASS__ . ':' . __TRAIT__ . ':' . __FILE__ . ':' . __LINE__ . ':' . __FUNCTION__ . ':' .
         'Exception thrown on getting user profile view data for a member', [
             'exception_type' => get_class($e),
             'message'        => $e->getMessage(),
@@ -129,7 +131,7 @@ Add this middleware class to the `$middleware` in `app/Http/Kernel.php`.
 
 ```
 protected $middleware = [
-    \App\Http\Middleware\AddUserToSentry::class
+    \App\Http\Middleware\SentryContext::class
 ];
 ```
 
@@ -137,14 +139,14 @@ When exception is thrown, Betterlog provides user data to Sentry for further inf
 
 ### Testing
 
-For testing purposes that exception is thrown to Sentry, add the following code to your command or job:
+For testing purposes so that exception is thrown to Sentry, add the following code to your command or job:
 ```
-if (config('sentry.enabled_test_exception')) {
+if (config('betterlog.enabled_test_exception')) {
     throw new \Exception('Unhandled exception is thrown to test sentry logging');
 }
 ```
 
 Then add this to `.env` file:
 ```
-SENTRY_ENABLED_TEST_EXCEPTION=false
+BETTERLOG_TEST_EXCEPTION=true
 ```
