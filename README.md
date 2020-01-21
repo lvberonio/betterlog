@@ -15,7 +15,7 @@ Add these lines to your composer.json file:
 
 ```
 "require": {
-    "lvberonio/betterlog": "1.4.0"
+    "lvberonio/betterlog": "1.4.1"
 },
 "repositories": [
     {

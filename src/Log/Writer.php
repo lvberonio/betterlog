@@ -10,6 +10,8 @@
 namespace Lvberonio\Betterlog\Log;
 
 use Illuminate\Log\Logger;
+use Sentry\Laravel\Facade;
+use Sentry\State\Scope;
 
 /**
  * Custom Log Writer
@@ -90,7 +92,7 @@ class Writer extends Logger
                     $errorMsg = $errorMsg ?? ($context['message'] ?? $exception);
 
                     $metaData = [
-                        'extra' => [
+                        'extras' => [
                             'className'    => $className,
                             'traitName'    => $traitName,
                             'functionName' => $functionName,
@@ -103,12 +105,15 @@ class Writer extends Logger
                         'level' => $level,
                     ];
 
-                    // Log to Sentry with Exception
+                    Facade::withScope(function (Scope $scope) use ($metaData) {
+                        $scope->setLevel(new \Sentry\Severity($metaData['level']));
+                        $scope->setExtras($metaData['extras']);
+                    });
+
                     if (is_object($exception)) {
-                        // $message contains is Exception
-                        \Sentry\SentryLaravel\SentryFacade::captureException($exception, $metaData);
+                        Facade::captureException($exception);
                     } elseif (!empty($context['exception'])) {
-                        \Sentry\SentryLaravel\SentryFacade::captureException($context['exception'], $metaData);
+                        Facade::captureException($context['exception']);
 
                         unset($context['exception']);
                     }
