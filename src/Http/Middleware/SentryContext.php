@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\Profile;
 use Carbon\Carbon;
 use Closure;
+use Sentry\State\Scope;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Exceptions\TokenBlacklistedException;
 
@@ -28,22 +29,26 @@ class SentryContext
     {
         if (!app()->environment('testing') && app()->bound('sentry')) {
 
-            /** @var \Raven_Client $sentry */
             $sentry = app('sentry');
 
             try {
-                // Add user context
                 if (auth()->check()) {
                     /** @var Account $account */
                     $account = auth()->user();
 
-                    $sentry->user_context([
-                        'id'           => $account->getKey(),
-                        'type'         => $account->isAdmin() ? 'admin' : 'user',
-                        'username'     => $account->username,
-                        'account_type' => $account->profile instanceof Profile ? $account->profile->account_type : null,
-                        'created_dt'   => Carbon::parse($account->{$account->getCreatedAtColumn()})->toDateTimeString(),
-                    ]);
+                    // Add user context
+                    $sentry->configureScope(function (Scope $scope) use ($account) : void {
+                        $scope->setUser([
+                            'id'           => $account->getKey(),
+                            'username'     => $account->username,
+                            'type'         => $account->isAdmin() ? 'admin' : 'user',
+                            'account_type' => $account->profile instanceof Profile
+                                ? $account->profile->account_type
+                                : null,
+                            'created_dt'   => Carbon::parse($account->{$account->getCreatedAtColumn()})
+                                ->toDateTimeString(),
+                        ], true);
+                    });
                 }
             } catch (TokenBlacklistedException $e) {
                 // just move along
